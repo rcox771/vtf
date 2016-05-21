@@ -1,121 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>testing stuff out</title>
-    <!--Let browser know website is optimized for mobile-->
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- jQuery, jQuery.ui, flowchart-->
-  <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <title>Vtf</title>
+    <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
   <script src="https://code.jquery.com/jquery.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-
-  <!--font awesome-->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
-    
-  <!-- materializecss -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css"  media="screen,projection">
+  <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
-  <!-- underscore -->
+   <!-- underscore -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <!-- knockout -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="app/app.css">
-  <script src="app/app.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" type="text/javascript"></script>      
   <style>
-      .draggable { max-width: 400px; height: 150px; padding: 0.5em; position:relative;}
-      .col {
-          padding:0px!important;
-          
-      }
+    html,body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+    #graph-container {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
   </style>
-  <script>
-      $(function() {
-        $( ".draggable" ).draggable({  });
-        $('.collapsible').collapsible({
-          accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
-        });
-      });
-      
-  </script>
 </head>
 <body>
+  <!-- we force the loading of the font awesome -->
+  <i class="fa fa-camera-retro fa-1x" style="color: rgba(0,0,0,0);"></i>
+  
+  <div id="graph-container"></div>
+  <div class="container" style="position: absolute!important; max-width:20%;">
+    <button class="waves-effect waves-light btn" data-bind="click: addTestFunc">new Function</button>
+    <button class="waves-effect waves-light btn" data-bind="click: addTestVar">new Variable</button>
+      <button class="waves-effect waves-light btn" data-bind="click: toggleWirer">connect</button>
+    <!--
     
-    
-    <script type="text/html" id="node-template">
-        <div class="draggable">
-          <div class="container valign">
-          
-              
-              <div class="col s2 valign" >
-                    <a href="#!"class="btn-floating waves-effect waves-light white" style="top:50px;"><i style="color:black!important;" class="fa fa-caret-left fa-3x"></i></a>
-              </div>
-              <div class="col s8">
-                  <div class="card blue-grey darken-1">
-                  
-                    <div class="card-content white-text">
-                      
-                      <span class="card-title" data-bind="text: name" style="text-transform:uppercase;">
-                      </span>
-                      <a class="btn-floating btn-small waves-effect waves-light orange right"><i class="fa fa-icons fa-edit"></i></a>
-    
-                                    
-        
-                    </div>
-                    <div class="card-action">
-                      <a href="#">This is a link</a>
-                    </div>
-                    
-                  </div>
-              </div>
-              <div class="col s2 valign" >
-                    <a href="#!"class="btn-floating waves-effect waves-light white" style="top:50px; margin-left:8px;"><i style="color:black!important;" class="fa fa-caret-right fa-3x"></i></a>
-              </div>
-          </div>
-        </div>
-    </script>
-    
-    
-    
-    <div class="container" data-bind="foreach: nodes">
-        <div class="row" data-bind="template: { name: 'node-template'}"></div>
-            
-        </div>
-    </div>
-    
-    
-    
+    <ul class="collapsible" data-collapsible="accordion">
+      <li>
+        <div class="collapsible-header">Tools</div>
+        <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+      </li>
+      <li>
+        <div class="collapsible-header">Functions</div>
+        <div class="collapsible-body"></div>
+      </li>
+
+    </ul>
+    -->
+  </div>
+  <!-- START SIGMA IMPORTS -->
+  <script src="linkurious.js/src/sigma.core.js"></script>
+  <script src="linkurious.js/src/conrad.js"></script>
+  <script src="linkurious.js/src/utils/sigma.utils.js"></script>
+  <script src="linkurious.js/src/utils/sigma.polyfills.js"></script>
+  <script src="linkurious.js/src/sigma.settings.js"></script>
+  <script src="linkurious.js/src/classes/sigma.classes.dispatcher.js"></script>
+  <script src="linkurious.js/src/classes/sigma.classes.configurable.js"></script>
+  <script src="linkurious.js/src/classes/sigma.classes.graph.js"></script>
+  <script src="linkurious.js/src/classes/sigma.classes.camera.js"></script>
+  <script src="linkurious.js/src/classes/sigma.classes.quad.js"></script>
+  <script src="linkurious.js/src/captors/sigma.captors.mouse.js"></script>
+  <script src="linkurious.js/src/captors/sigma.captors.touch.js"></script>
+  <script src="linkurious.js/src/renderers/sigma.renderers.canvas.js"></script>
+  <script src="linkurious.js/src/renderers/sigma.renderers.webgl.js"></script>
+  <script src="linkurious.js/src/renderers/sigma.renderers.svg.js"></script>
+  <script src="linkurious.js/src/renderers/sigma.renderers.def.js"></script>
+  <script src="linkurious.js/src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+  <script src="linkurious.js/src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+  <script src="linkurious.js/src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+  <script src="linkurious.js/src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+  <script src="linkurious.js/src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+  <script src="linkurious.js/src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.utils.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.nodes.def.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.edges.def.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.edges.curve.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.edges.curvedArrow.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.labels.def.js"></script>
+  <script src="linkurious.js/src/renderers/svg/sigma.svg.hovers.def.js"></script>
+  <script src="linkurious.js/src/middlewares/sigma.middlewares.rescale.js"></script>
+  <script src="linkurious.js/src/middlewares/sigma.middlewares.copy.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.animation.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.bindEvents.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.bindDOMEvents.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.drawHovers.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.animation.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.bindEvents.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.bindDOMEvents.js"></script>
+  <script src="linkurious.js/src/misc/sigma.misc.drawHovers.js"></script>
+  <!-- END SIGMA IMPORTS -->
+  <script src="linkurious.js/plugins/sigma.plugins.dragNodes/sigma.plugins.dragNodes.js"></script>
+  <script src="linkurious.js/plugins/sigma.plugins.keyboard/sigma.plugins.keyboard.js"></script>
+  <script src="linkurious.js/plugins/sigma.helpers.graph/sigma.helpers.graph.js"></script>
+  <script src="linkurious.js/plugins/sigma.plugins.activeState/sigma.plugins.activeState.js"></script>
+  <script src="linkurious.js/plugins/sigma.plugins.select/sigma.plugins.select.js"></script>
+  <script src="linkurious.js/plugins/sigma.renderers.glyphs/settings.js"></script>
+  <script src="linkurious.js/plugins/sigma.renderers.glyphs/sigma.renderers.glyphs.js"></script>
+  <script src="wirer_plugin.js"></script>
+  <script src="app.js"></script>
 </body>
-
-<script type="text/javascript">
-    function Node(name, type){
-        this.name = ko.observable(name);
-        this.type = ko.observable(type);
-    }
-    
-    function ViewModel(){
-        var self = this;
-        self.nodes = ko.observableArray([]);
-        self.addNode = function(name, type){
-            self.nodes.push(new Node(name, type));
-        }
-        
-    }
-    
-    vm = new ViewModel();
-    ko.applyBindings(vm);
-    
-    _.each(['add','mult','dot'], function(f){
-       vm.addNode(f,'func'); 
-    });
-    
-    
-    
-    
-    
-    
-    
-</script>
-
-
-
 </html>
