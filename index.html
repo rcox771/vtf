@@ -11,48 +11,114 @@
    <!-- underscore -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
   <!-- knockout -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" type="text/javascript"></script>      
-  <style>
-    html,body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-    }
-    #graph-container {
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" type="text/javascript"></script>
+  <script src="mathfuncs.json" type="text/javascript"></script>
+  <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-  <!-- we force the loading of the font awesome -->
-  <i class="fa fa-camera-retro fa-1x" style="color: rgba(0,0,0,0);"></i>
-  
-  <div id="graph-container"></div>
-  <div class="container" style="position: absolute!important; max-width:20%;">
-    <button class="waves-effect waves-light btn" data-bind="click: addTestFunc">new Function</button>
-    <button class="waves-effect waves-light btn" data-bind="click: addTestVar">new Variable</button>
-      <button class="waves-effect waves-light btn" data-bind="click: toggleWirer">connect</button>
-    <!--
-    
-    <ul class="collapsible" data-collapsible="accordion">
-      <li>
-        <div class="collapsible-header">Tools</div>
-        <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-      </li>
-      <li>
-        <div class="collapsible-header">Functions</div>
-        <div class="collapsible-body"></div>
-      </li>
+<main>
 
+<div id="graph-container" data-bind="event:{
+                  dragover:  $root.handleDragOver,
+                  drop:      $root.handleDrop}">
+</div>
+<div style="left:0; right:0; position: absolute!important;">
+
+  <ul id="file" class="dropdown-content">
+    <li><a href="#!">New</a></li>
+    <li><a href="#!">Open</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">Save As ></a></li>
+  </ul>
+  <ul id="edit" class="dropdown-content">
+    <li><a href="#!">Find</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">Delete</a></li>
+    <li><a href="#!">Copy</a></li>
+    <li><a href="#!">Paste</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">Undo</a></li>
+    <li><a href="#!">Redo</a></li>
+  </ul>
+  <ul id="view" class="dropdown-content">
+    <li><a href="#!">Change Theme</a></li>
+    <li><a href="#!">Expand All</a></li>
+    <li><a href="#!">Collapse All</a></li>
+    <li><a href="#!">Hide Links</a></li>
+    <li><a href="#!">Hide Nodes</a></li>
+    <li><a href="#!">Show Toolbars</a></li>
+    <li><a href="#!">Show Labels on Nodes</a></li>
+  </ul>
+  <ul id="layout" class="dropdown-content">
+    <li><a href="#!">Force</a></li>
+    <li><a href="#!">Hierarchy (Top-sort)</a></li>
+  </ul>
+
+
+  <nav class="top-nav" style="background-color: #3F51B5;">
+    <a href="#!" data-activates="slide-out" class="btn btn-large left button-collapse show-on-large" style="background-color: #536DFE; diplay:visible!important;"><i class="fa fa-bars"></i></a>
+
+    <a href="#!" class="brand-logo center">VTF</a>
+    <ul class="left" style="padding-left: 0; margin:none;">
+
+      <!-- Dropdown Trigger -->
+      <li><a class="dropdown-button" href="#!" data-activates="file">File</a></li>
+      <!-- Dropdown Trigger -->
+      <li><a class="dropdown-button" href="#!" data-activates="edit">Edit</a></li>
+      <!-- Dropdown Trigger -->
+      <li><a class="dropdown-button" href="#!" data-activates="view">View</a></li>
+      <!-- Dropdown Trigger -->
+      <li><a class="dropdown-button" href="#!" data-activates="layout">Layout</a></li>
     </ul>
-    -->
-  </div>
+    <ul class="right">
+      <li><a href="#!">Help</a></li>
+      <li><a href="#!">About</a></li>
+    </ul>
+
+
+    <div>
+      <ul id="slide-out" class="side-nav" style="background-color: #303F9F;">
+        <li class="search">
+          <div class="search-wrapper">
+            <form>
+              <div class="input-field">
+                <input id="search" type="search" required>
+                <label for="search"><i class="material-icons fa fa-search"></i></label>
+                <i class="material-icons fa fa-times"></i>
+              </div>
+            </form>
+
+          </div>
+        </li>
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion" data-bind="foreach: Object.keys(math_funcs())">
+            <li>
+              <a class="collapsible-header squash-left"></span><i class="fa fa-chevron-right"></i><span data-bind="text: $data"></a>
+              <div class="collapsible-body">
+                <ul draggable="true" data-bind="foreach: math_funcs[$data]">
+                  <li><a href="#!" data-bind="text: $data.name, event:{
+                  dragstart: $root.handleDragStart,
+                  dragover:  $root.handleDragOver,
+                  drop:      $root.handleDrop}"></a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+
+
+  </nav>
+  <i class="fa fa-camera-retro fa-1x" style="color: rgba(0,0,0,0);"></i>
+
+
+
+
+
+</div>
   <!-- START SIGMA IMPORTS -->
   <script src="linkurious.js/src/sigma.core.js"></script>
   <script src="linkurious.js/src/conrad.js"></script>
@@ -109,10 +175,33 @@
   <script src="linkurious.js/plugins/sigma.plugins.keyboard/sigma.plugins.keyboard.js"></script>
   <script src="linkurious.js/plugins/sigma.helpers.graph/sigma.helpers.graph.js"></script>
   <script src="linkurious.js/plugins/sigma.plugins.activeState/sigma.plugins.activeState.js"></script>
+
+  <script src="linkurious.js/plugins/sigma.renderers.linkurious/settings.js"></script>
+  <script src="linkurious.js/plugins/sigma.renderers.linkurious/canvas/sigma.canvas.nodes.square.js"></script>
+
+
   <script src="linkurious.js/plugins/sigma.plugins.select/sigma.plugins.select.js"></script>
   <script src="linkurious.js/plugins/sigma.renderers.glyphs/settings.js"></script>
   <script src="linkurious.js/plugins/sigma.renderers.glyphs/sigma.renderers.glyphs.js"></script>
   <script src="wirer_plugin.js"></script>
   <script src="app.js"></script>
+
+
+
+</main>
+<footer style="position: relative;">
+  <div class="footer-copyright">
+    Copyright?
+
+      <div class="right" style="overflow: hidden; margin-left:10px; right:0;">
+
+        <iframe src="http://ghbtns.com/github-btn.html?user=rcox771&repo=vtf&type=watch&count=true&size=large" allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30">
+        </iframe>
+      </div>
+
+      <a class="grey-text text-lighten-4 right" href="https://raw.githubusercontent.com/rcox771/vtf/master/LICENSE">MIT License</a>
+    </div>
+  </div>
+</footer>
 </body>
 </html>

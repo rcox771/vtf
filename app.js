@@ -1,16 +1,119 @@
+var _dragged;
+ko.bindingHandlers.drag = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var dragElement = $(element);
+        var dragOptions = {
+            helper: 'clone',
+            revert: true,
+            revertDuration: 0,
+            start: function() {
+                _dragged = ko.utils.unwrapObservable(valueAccessor().value);
+            },
+            cursor: 'default'
+        };
+        dragElement.draggable(dragOptions).disableSelection();
+    }
+};
+
+ko.bindingHandlers.drop = {
+    init: function(element, valueAccessor, allBindingsAccessor, viewModel) {
+        var dropElement = $(element);
+        var dropOptions = {
+            drop: function(event, ui) {
+                valueAccessor().value(_dragged);
+            }
+        };
+        dropElement.droppable(dropOptions);
+    }
+};
+
+
+
+
 $(document).ready(function(){
+ $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrain_width: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: true, // Displays dropdown below the button
+      alignment: 'left' // Displays dropdown with edge aligned to the left of button
+    }
+  );
+$('.button-collapse').sideNav({
+        menuWidth: 300, // Default is 240
+        edge: 'left', // Choose the horizontal origin
+        closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+      }
+    );
+
   $('.collapsible').collapsible({
     accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
   });
 
 
+    $('ul.tabs').tabs();
+    $('.collapsible').collapsible({
+      accordion : false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
+    });
 
 
+function typeList(lst){
+    var tmp = [];
+    tmp.push(new typeUtil('', 'angle-left'));
+    _.each(lst, function(item){
+        tmp.push(new typeUtil(item[0], item[1]));
+    });
+    tmp.push(new typeUtil('', 'angle-right'));
+    console.log('tmp was :', tmp);
+    return tmp;
+}
+
+function typeUtil(name, icon){
+    var self = this;
+    self.name = name;
+    self.icon = "fa fa-"+icon;
+}
+
+
+variable_types = [
+    ["Tensor", "cubes"],
+    ["String", "font"],
+    ["Dict", "book"],
+    ["script", "code"],
+    ["float", "magic"],
+    ["list","list"]
+];
+
+func_types = [
+    ["Dot", "cubes"],
+    ["Shared", "font"],
+    ["Dict", "book"],
+    ["script", "code"],
+    ["float", "magic"],
+    ["list","list"]
+];
 
 function ViewModel(sigmaInstance){
     self = this;
-    
+    self.dropped = ko.observableArray();
+    self.lastDropped = ko.computed({
+         read: function() {
+             return self.dropped().length ? this.toppingStack()[0] : "";
+         },
+         write: function(value) {
+            console.log('last is now:', value);
+             self.dropped.unshift(value);
+         },
+         owner: self
+    });
+    self.math_funcs = ko.observable(math_funcs);
     self.functions = ko.observableArray([]);
+    console.log('init vars:', variable_types);
+    self.variable_types = ko.observableArray(typeList(variable_types));
+    self.func_types = ko.observableArray(typeList(func_types));
+
     self.g = sigmaInstance;
     self.counters = ko.observable({});
     self.next = function(key){
@@ -26,6 +129,31 @@ function ViewModel(sigmaInstance){
     self.connect = function(n){
         //todo
     }
+    this.draggedItem = ko.observable();
+      
+        this.handleDragStart = function(Item, e) {
+            console.log(Item);
+            this.draggedItem(Item);
+            console.log('dragStart');   
+            // Returning true is required to stop KO squashing the default action
+            // This will allow dragover to take over from dragstart
+            return true;
+        }.bind(this);
+    
+        this.handleDragOver = function(e) {
+            //console.log('dragOver');
+        }.bind(this);
+    
+        this.handleDrop = function(Item, e) {     
+            console.log('drop')
+            // The next 3 lines shows how you can copy the dragged Item onto the dropped target...
+            var context = ko.contextFor(e.target);
+            self.addFunc(self.draggedItem());
+            //var index = context.$index();
+            //console.log('index:', index);
+            //console.log('context:', context);
+            //this.miscItems()[index].ItemData(this.draggedItem().ItemData());
+        }.bind(this);
 
     /*
     self.nearest = function(x1,y1){
@@ -63,6 +191,98 @@ function ViewModel(sigmaInstance){
             color: '#666'
         });
         self.g.refresh();
+    }
+    self.hypernodes = [];
+    self.addFunc = function(obj){
+         var config = {
+             type: 'func'
+         }
+         var name = self.next(obj.name);
+
+         var rootNode = {
+             id: name,
+             label: name,
+             x: Math.random(),
+             y: Math.random(),
+             size: 30,
+
+             color: 'orange',
+         }
+
+         self.g.graph.addNode(rootNode);
+
+         if( (obj.inputs.required.length == 0) && (obj.inputs.options.length == 0) ){
+             //then give a default input node dammit
+             var defaultname = self.next('default_input');
+             self.g.graph.addNode({
+                  id: defaultname,
+
+                  label: defaultname,
+                  x: rootNode.x - .1,
+                  y: rootNode.y,
+                  size: 10,
+
+                  color: 'pink'
+
+              });
+              self.g.graph.addEdge({
+                  "source":defaultname,
+                  "target":name,
+                  "id": self.next("inputFlow"),
+                  "color":"rgba(150,100,100,.7)"
+              });
+         } else {
+
+            _.each(obj.inputs.required, function(req){
+                var reqName = self.next(req);
+                var reqNode = {
+
+                    id: reqName,
+
+                    label: "required",
+                    x: rootNode.x - .1,
+                    y: rootNode.y * Math.random(),
+                    size: 10,
+
+                    color: 'red'
+                }
+                self.g.graph.addNode(reqNode);
+                self.g.graph.addEdge({
+                    "source": reqName,
+                    "target": name,
+                    "id": self.next("inputFlow")
+                });
+            });
+
+            optlen = obj.inputs.options.length;
+            var cntr=0;
+            _.each(obj.inputs.options, function(opt){
+                var optName = self.next(opt);
+                var optNode = {
+
+                    id: optName,
+
+                    label: "optional",
+                    x: rootNode.x - .1,
+                    y: rootNode.y * Math.random(),
+                    size: 10,
+
+                    color: 'grey'
+                }
+                self.g.graph.addNode(optNode);
+
+                self.g.graph.addEdge({
+                    "source": optName,
+                    "target": name,
+                    "id": self.next("inputFlow")
+                });
+            });
+
+
+
+         }
+
+         self.g.refresh();
     }
 
     self.addTestVar = function(){
@@ -186,21 +406,19 @@ function ViewModel(sigmaInstance){
       container: 'graph-container',
       
       settings: {
-        zoomMin: 0.001,
-        zoomMax: 10,
+        zoomMin: .1,
+        zoomMax: 3,
+
+            // {number} The size of the outer border of nodes.
+            nodeOuterBorderSize: .1,
+            // {string} The default node outer border's color.
+        font: "roboto",
+        labelAlignment:"inside",
         dragNodeStickiness: 0.01,
-        nodeBorderSize: 2,
-        defaultNodeBorderColor: '#000',
+        //nodeBorderSize: 2,
         enableEdgeHovering: false,
-        edgeHoverHighlightNodes: 'circle',
-        glyphScale: 0.7,
-        glyphFillColor: '#666',
-        glyphTextColor: 'white',
-        glyphStrokeColor: 'transparent',
-        glyphFont: 'FontAwesome',
-        glyphFontStyle: 'normal',
-        glyphTextThreshold: 6,
-        glyphThreshold: 3
+        //edgeHoverHighlightNodes: 'circle',
+
       }
     });
 
